@@ -728,6 +728,58 @@ bool CAIBehaviorCtx::ImplementAttackTargetManeuver (CShip *pShip, CSpaceObject *
 			break;
 			}
 
+		case aicombatWolfPack:
+			{
+			//	Calculate how brave we are based on the last time we got hit.
+			//	rBravery increases from 0.0 (scared) to 1.0 (brave) if not being hit
+			
+			const int MAX_MEMORY_TICKS = 900;		// Note: 30 ticks per second
+			int iLastHit = Max(0, Min(MAX_MEMORY_TICKS, (g_pUniverse->GetTicks() - m_iLastAttack)));
+			Metric rBravery = (Metric)iLastHit / (Metric)MAX_MEMORY_TICKS;
+
+			//	rRestraint increases from 0.0 (calm) to 1.0 (reckless) if not attacking
+			
+			int iLastFire = Max(0, Min(MAX_MEMORY_TICKS, (g_pUniverse->GetTicks() - pShip->GetLastFireTime())));
+			Metric rRecklessness = (Metric)iLastFire / (Metric)MAX_MEMORY_TICKS;
+			
+			//	Calculate the maximum distance at which we'll begin encircling, based on bravery
+
+			Metric rMinDist = 0.25 * GetPrimaryAimRange2();
+			Metric rCloseCombatDist = rMinDist + (rMinDist * (1.0 - rBravery));
+
+			//	If we are not within potential combat range, then maneuver closer to the target
+
+			if (rTargetDist2 > GetPrimaryAimRange2())
+					vDirection = CombinePotential(CalcManeuverCloseOnTarget(pShip, pTarget, vTarget, rTargetDist2));
+
+			// If we have no more restraint, then attempt to attack the target directly
+
+			else if (rRecklessness > 0.95)
+				vDirection = CombinePotential(CalcManeuverCloseOnTarget(pShip, pTarget, vTarget, rTargetDist2));
+
+			//	If we are within combat range but not yet in close combat, then spiral closer to the target
+
+			else if (rTargetDist2 > rCloseCombatDist)
+				vDirection = CombinePotential(CalcManeuverSpiralIn(pShip, vTarget));
+
+			//	If we are within combat range and it seems safe to attack, then attack the target directly
+
+			else if (rBravery > 0.25)
+				vDirection = CombinePotential(CalcManeuverCloseOnTarget(pShip, pTarget, vTarget, rTargetDist2));
+				
+			//	If we are too close, then spiral outwards
+			
+			else if (rTargetDist2 < rMinDist)
+				vDirection = CombinePotential(CalcManeuverSpiralOut(pShip, vTarget));
+
+			//	Otherwise, avoid hazards and attack if possible
+
+			else
+				vDirection = GetPotential();
+
+			break;
+			}
+
 		case aicombatAdvanced:
 			{
 			bool bWeAreFaster = (pShip->GetMaxSpeed() >= pTarget->GetMaxSpeed());

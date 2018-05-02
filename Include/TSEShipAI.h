@@ -53,6 +53,7 @@ enum AICombatStyles
 	aicombatNoRetreat =						3,	//	Do not turn away from target
 	aicombatChase =							4,	//	Get in position behind the target
 	aicombatAdvanced =						5,	//	Dogfight, keeping proper distance from target
+	aicombatWolfPack =						6,	//	Wolf pack hunting strategy, with recklessness
 	};
 
 class CAISettings

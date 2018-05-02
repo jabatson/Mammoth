@@ -31,6 +31,7 @@
 #define COMBAT_STYLE_CHASE						CONSTLIT("chase")
 #define COMBAT_STYLE_FLYBY						CONSTLIT("flyby")
 #define COMBAT_STYLE_NO_RETREAT					CONSTLIT("noRetreat")
+#define COMBAT_STYLE_WOLF_PACK					CONSTLIT("wolfPack")
 #define COMBAT_STYLE_STANDARD					CONSTLIT("standard")
 #define COMBAT_STYLE_STAND_OFF					CONSTLIT("standOff")
 
@@ -62,6 +63,8 @@ AICombatStyles CAISettings::ConvertToAICombatStyle (const CString &sValue)
 		return aicombatFlyby;
 	else if (strEquals(sValue, COMBAT_STYLE_NO_RETREAT))
 		return aicombatNoRetreat;
+	else if (strEquals(sValue, COMBAT_STYLE_WOLF_PACK))
+		return aicombatWolfPack;
 	else if (strEquals(sValue, COMBAT_STYLE_STANDARD))
 		return aicombatStandOff;
 	else if (strEquals(sValue, COMBAT_STYLE_STAND_OFF))
@@ -113,6 +116,9 @@ CString CAISettings::ConvertToID (AICombatStyles iStyle)
 
 		case aicombatAdvanced:
 			return COMBAT_STYLE_ADVANCED;
+			
+		case aicombatWolfPack:
+			return COMBAT_STYLE_WOLF_PACK;
 
 		default:
 			return NULL_STR;

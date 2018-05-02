@@ -1310,6 +1310,7 @@ static PRIMITIVEPROCDEF g_Extensions[] =
 			"      = 'chase\n"
 			"      = 'flyby\n"
 			"      = 'noRetreat\n"
+			"      = 'wolfPack\n"
 			"      = 'standard\n"
 			"      = 'standOff\n"
 			"\n"
